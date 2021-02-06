@@ -24,9 +24,9 @@ vector<int> bubbleSort(vector<int> &list)
         for (int j = 0; j < n - (i + 1); j++) {
             // swap if left bigger than right
             if (list[j] > list[j + 1]) {
-                int swap_val = list[j];
+                int swapVal = list[j];
                 list[j] = list[j + 1];
-                list[j + 1] = swap_val;
+                list[j + 1] = swapVal;
 
                 swaps++;
             }
@@ -43,7 +43,60 @@ vector<int> bubbleSort(vector<int> &list)
     return list;
 }
 
-void quickSort(vector<int> &list);
+int qCount;
+int qSort_split(vector<int> &list, int start, int end)
+{
+    int pivot = list[end];
+    int left = start;
+    int right = end - 1;
+
+    while (left <= right) {
+        // locate pair to swap
+        while (list[left] < pivot && left < end) {
+            left++;
+        }
+        while (list[right] > pivot && right >= start) {
+            right--;
+        }
+
+        // either swap pair or put pivot into position
+        if (left < right) {
+            int swapVal = list[left];
+            list[left] = list[right];
+            list[right] = swapVal;
+        }
+        else {
+            list[end] = list[left];
+            list[left] = pivot;
+        }
+
+        qCount++;
+    }
+
+    return left;
+}
+
+void qSort_sublist(vector<int> &list, int start, int end)
+{
+    // base case
+    if (start >= end) {
+        return;
+    }
+
+    // split list into sublists
+    int pivotPos = qSort_split(list, start, end);
+
+    // recursively sort sublists
+    qSort_sublist(list, start, pivotPos - 1);
+    qSort_sublist(list, pivotPos + 1, end);
+}
+
+void quickSort(vector<int> &list)
+{
+    qCount = 0;
+    qSort_sublist(list, 0, list.size() - 1);
+    cout << qCount << " swaps." << endl;
+}
 
 int main()
 {
@@ -57,8 +110,8 @@ int main()
 
     // sort list
     vector<int> sortedList = list;
-    bubbleSort(sortedList);
-    // quickSort(sortedList);
+    // bubbleSort(sortedList);
+    quickSort(sortedList);
 
     // return sorted list
     cout << "Sorted list:   ";
